@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Schedule;
 |
 */
 if (config('app.demo_mode')) {
-    Schedule::command('demo:reset --force')
+    Schedule::command('demo:reset')
         ->everySixHours()
         ->runInBackground()
         ->withoutOverlapping();
