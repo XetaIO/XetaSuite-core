@@ -17,6 +17,8 @@ use XetaSuite\Models\Permission;
 use XetaSuite\Models\Role;
 use XetaSuite\Policies\PermissionPolicy;
 use XetaSuite\Policies\RolePolicy;
+use XetaSuite\Contracts\Ai\LlmProvider;
+use XetaSuite\Services\Ai\GroqProvider;
 use XetaSuite\Settings\Settings;
 
 class AppServiceProvider extends ServiceProvider
@@ -32,6 +34,9 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton(function (Application $app): Settings {
             return new Settings($app['cache.store']);
         });
+
+        // Bind the AI provider interface to the configured implementation
+        $this->app->bind(LlmProvider::class, GroqProvider::class);
     }
 
     /**

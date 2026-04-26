@@ -42,4 +42,9 @@ return [
         'enabled' => env('RECAPTCHA_ENABLED', true),
     ],
 
+    'groq' => [
+        'api_key' => env('GROQ_API_KEY'),
+        'base_url' => 'https://api.groq.com/openai/v1',
+    ],
+
 ];

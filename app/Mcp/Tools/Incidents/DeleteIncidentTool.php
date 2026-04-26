@@ -1,0 +1,44 @@
+<?php
+
+declare(strict_types=1);
+
+namespace XetaSuite\Mcp\Tools\Incidents;
+
+use Illuminate\Contracts\JsonSchema\JsonSchema;
+use Laravel\Mcp\Request;
+use Laravel\Mcp\Response;
+use Laravel\Mcp\Server\Attributes\Description;
+use Laravel\Mcp\Server\Tool;
+use XetaSuite\Actions\Incidents\DeleteIncident;
+use XetaSuite\Mcp\Concerns\ResolvesSiteContext;
+use XetaSuite\Models\Incident;
+
+#[Description('Delete an incident.')]
+class DeleteIncidentTool extends Tool
+{
+    use ResolvesSiteContext;
+
+    public function handle(Request $request): Response
+    {
+        $this->resolveSiteId($request);
+        $user = $request->user();
+
+        $request->validate(['incident_id' => 'required|integer']);
+
+        $incident = Incident::findOrFail($request->get('incident_id'));
+
+        abort_if(! $user->can('delete', $incident), 403, 'Unauthorized action.');
+
+        app(DeleteIncident::class)->handle($incident);
+
+        return Response::text("Incident #{$request->get('incident_id')} deleted successfully.");
+    }
+
+    public function schema(JsonSchema $schema): array
+    {
+        return [
+            'site_id' => $schema->integer()->description('Site ID (optional)'),
+            'incident_id' => $schema->integer()->description('ID of the incident to delete')->required(),
+        ];
+    }
+}
