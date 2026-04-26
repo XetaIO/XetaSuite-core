@@ -3,7 +3,6 @@
 declare(strict_types=1);
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Http;
 use Spatie\Permission\Models\Role;
 use XetaSuite\Contracts\Ai\LlmProvider;
 use XetaSuite\Exceptions\Ai\LlmRateLimitException;
