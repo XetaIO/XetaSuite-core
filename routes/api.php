@@ -41,7 +41,7 @@ use XetaSuite\Http\Resources\V1\Users\UserDetailResource;
 // Mobile authentication (no CSRF, returns Bearer PAT)
 Route::post('/v1/auth/mobile-login', [MobileAuthController::class, 'login']);
 
-Route::group(['prefix' => 'v1', 'middleware' => 'auth:sanctum'], function () {
+Route::group(['prefix' => 'v1', 'middleware' => ['auth:sanctum', 'throttle:api']], function () {
 
     // Dashboard stats & charts
     Route::get('/dashboard/stats', [DashboardController::class, 'stats']);

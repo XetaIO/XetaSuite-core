@@ -5,12 +5,15 @@ declare(strict_types=1);
 namespace XetaSuite\Providers;
 
 use Carbon\CarbonImmutable;
+use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Rules\Password;
 use XetaSuite\Models\Permission;
@@ -48,6 +51,7 @@ class AppServiceProvider extends ServiceProvider
         $this->configurePasswords();
         $this->configureCommands();
         $this->configureDates();
+        $this->configureRateLimiting();
     }
 
     /**
@@ -94,5 +98,12 @@ class AppServiceProvider extends ServiceProvider
         Model::shouldBeStrict();
         Gate::policy(Role::class, RolePolicy::class);
         Gate::policy(Permission::class, PermissionPolicy::class);
+    }
+
+    private function configureRateLimiting(): void
+    {
+        RateLimiter::for('api', fn (Request $request) => Limit::perMinute(600)->by($request->user()?->id));
+
+        RateLimiter::for('mcp', fn (Request $request) => Limit::perMinute(120)->by($request->user()?->id ?: $request->ip()));
     }
 }
