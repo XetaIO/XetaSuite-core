@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace XetaSuite\Http\Controllers\Api\V1\Auth;
 
+use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use XetaSuite\Http\Controllers\Api\V1\Controller;
@@ -12,6 +13,12 @@ use XetaSuite\Models\User;
 
 class MobileAuthController extends Controller
 {
+    /**
+     * Default lifetime (in minutes) of a mobile Personal Access Token.
+     * Override via SANCTUM_MOBILE_TOKEN_TTL env var.
+     */
+    private const DEFAULT_MOBILE_TOKEN_TTL_MINUTES = 60 * 24 * 30; // 30 days
+
     /**
      * Authenticate a mobile user and return a Personal Access Token.
      * This endpoint does not require CSRF protection (stateless Bearer auth).
@@ -27,7 +34,14 @@ class MobileAuthController extends Controller
         /** @var User $user */
         $user = Auth::user();
 
-        $token = $user->createToken($request->validated('device_name'), ['*']);
+        $ttlMinutes = (int) config('sanctum.mobile_token_ttl', self::DEFAULT_MOBILE_TOKEN_TTL_MINUTES);
+        $expiresAt = $ttlMinutes > 0 ? Carbon::now()->addMinutes($ttlMinutes) : null;
+
+        $token = $user->createToken(
+            $request->validated('device_name'),
+            ['mobile'],
+            $expiresAt,
+        );
 
         return response()->json([
             'plain_text_token' => $token->plainTextToken,

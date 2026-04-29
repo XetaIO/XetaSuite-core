@@ -49,6 +49,18 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Mobile Token Lifetime (minutes)
+    |--------------------------------------------------------------------------
+    |
+    | Number of minutes before a Personal Access Token issued through the
+    | mobile login endpoint expires. Set to 0 to disable expiration.
+    |
+    */
+
+    'mobile_token_ttl' => (int) env('SANCTUM_MOBILE_TOKEN_TTL', 60 * 24 * 30),
+
+    /*
+    |--------------------------------------------------------------------------
     | Token Prefix
     |--------------------------------------------------------------------------
     |

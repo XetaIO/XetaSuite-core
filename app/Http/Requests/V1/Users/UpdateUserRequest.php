@@ -6,6 +6,7 @@ namespace XetaSuite\Http\Requests\V1\Users;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\Password;
 use XetaSuite\Models\User;
 
 class UpdateUserRequest extends FormRequest
@@ -30,7 +31,7 @@ class UpdateUserRequest extends FormRequest
             'email' => ['sometimes', 'email', 'max:255', Rule::unique('users', 'email')->ignore($userId)],
             'first_name' => ['sometimes', 'string', 'max:255'],
             'last_name' => ['sometimes', 'string', 'max:255'],
-            'password' => ['nullable', 'string', 'min:8'],
+            'password' => ['nullable', 'string', Password::defaults()],
             'locale' => ['nullable', 'string', Rule::in(['fr', 'en'])],
             'office_phone' => ['nullable', 'string', 'max:50'],
             'cell_phone' => ['nullable', 'string', 'max:50'],

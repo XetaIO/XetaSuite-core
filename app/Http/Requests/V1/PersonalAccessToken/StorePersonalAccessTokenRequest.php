@@ -20,7 +20,7 @@ class StorePersonalAccessTokenRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'max:100'],
-            'expires_at' => ['nullable', 'date', 'after:now'],
+            'expires_at' => ['nullable', 'date', 'after:now', 'before_or_equal:'.now()->addYear()->toDateTimeString()],
         ];
     }
 }

@@ -127,4 +127,7 @@ return [
 
     // Special Permissions
     'bypass.login' => 'Can bypass login when disabled',
+
+    // Assistant
+    'assistant.use' => 'Use the AI assistant',
 ];

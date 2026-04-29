@@ -28,7 +28,8 @@ use XetaSuite\Http\Controllers\Api\V1\UserController;
 use XetaSuite\Http\Controllers\Api\V1\UserLocaleController;
 use XetaSuite\Http\Controllers\Api\V1\UserPasswordController;
 use XetaSuite\Http\Controllers\Api\V1\UserSiteController;
-use XetaSuite\Http\Controllers\Api\V1\VoiceChatController;
+use XetaSuite\Http\Controllers\Api\V1\AssistantChatController;
+use XetaSuite\Http\Controllers\Api\V1\AssistantConversationController;
 use XetaSuite\Http\Controllers\Api\V1\ZoneController;
 use XetaSuite\Http\Resources\V1\Users\UserDetailResource;
 
@@ -39,7 +40,8 @@ use XetaSuite\Http\Resources\V1\Users\UserDetailResource;
  */
 
 // Mobile authentication (no CSRF, returns Bearer PAT)
-Route::post('/v1/auth/mobile-login', [MobileAuthController::class, 'login']);
+Route::post('/v1/auth/mobile-login', [MobileAuthController::class, 'login'])
+    ->middleware('throttle:mobile-login');
 
 Route::group(['prefix' => 'v1', 'middleware' => ['auth:sanctum', 'throttle:api']], function () {
 
@@ -205,6 +207,12 @@ Route::group(['prefix' => 'v1', 'middleware' => ['auth:sanctum', 'throttle:api']
     Route::patch('calendar-events/{calendar_event}/dates', [CalendarEventController::class, 'updateDates']);
 
     // Voice Assistant (mobile — proxies AI API server-side to protect the API key)
-    Route::post('voice/chat', [VoiceChatController::class, 'chat']);
+    Route::post('assistant/chat', [AssistantChatController::class, 'chat'])->middleware('throttle:assistant-chat');
+
+    // Assistant conversations (threaded history per user × site)
+    Route::get('assistant/conversations', [AssistantConversationController::class, 'index']);
+    Route::post('assistant/conversations', [AssistantConversationController::class, 'store']);
+    Route::get('assistant/conversations/{assistant_conversation}', [AssistantConversationController::class, 'show']);
+    Route::delete('assistant/conversations/{assistant_conversation}', [AssistantConversationController::class, 'destroy']);
 
 });

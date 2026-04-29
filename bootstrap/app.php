@@ -14,6 +14,9 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->statefulApi();
 
+        // Global security headers (applied to all responses).
+        $middleware->append(\XetaSuite\Http\Middleware\SecurityHeaders::class);
+
         // Register middleware aliases
         $middleware->alias([
             'recaptcha' => \XetaSuite\Http\Middleware\VerifyRecaptcha::class,
@@ -35,5 +38,11 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        //
+        $exceptions->render(function (\XetaSuite\Exceptions\Ai\LlmRateLimitException $e, $request) {
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'message' => 'Trop de demandes. Veuillez patienter quelques instants avant de réessayer.',
+                ], 429);
+            }
+        });
     })->create();

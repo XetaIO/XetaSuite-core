@@ -16,10 +16,19 @@ class GroqProvider implements LlmProvider
 
     private string $baseUrl;
 
+    private string $model;
+
+    private int $maxTokens;
+
+    private float $temperature;
+
     public function __construct()
     {
-        $this->apiKey = config('services.groq.api_key', '');
-        $this->baseUrl = config('services.groq.base_url', 'https://api.groq.com/openai/v1');
+        $this->apiKey = (string) config('services.groq.api_key', '');
+        $this->baseUrl = (string) config('services.groq.base_url', 'https://api.groq.com/openai/v1');
+        $this->model = (string) config('services.groq.model', 'llama-3.3-70b-versatile');
+        $this->maxTokens = (int) config('services.groq.max_tokens', 1024);
+        $this->temperature = (float) config('services.groq.temperature', 0.7);
     }
 
     /**
@@ -34,9 +43,10 @@ class GroqProvider implements LlmProvider
     public function chat(array $messages, array $tools = []): array
     {
         $payload = [
-            'model' => 'llama-3.3-70b-versatile',
+            'model' => $this->model,
             'messages' => $messages,
-            'max_tokens' => 1024,
+            'max_tokens' => $this->maxTokens,
+            'temperature' => $this->temperature,
         ];
 
         if (! empty($tools)) {
