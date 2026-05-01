@@ -167,28 +167,7 @@ class AssistantConversationService
 
             if ($finishReason === 'tool_calls' && ! empty($message['tool_calls'])) {
                 $messages[] = $message;
-
-                foreach ($message['tool_calls'] as $toolCall) {
-                    $name = $toolCall['function']['name'];
-                    $args = json_decode($toolCall['function']['arguments'] ?? '{}', true) ?? [];
-                    $args = $this->coercer->coerce($args);
-
-                    $result = $this->registry->execute($user, $name, $args);
-
-                    $toolCallsLog[] = [
-                        'iteration' => $iterations,
-                        'name' => $name,
-                        'arguments' => $args,
-                        'result' => $result,
-                    ];
-
-                    $messages[] = [
-                        'role' => 'tool',
-                        'tool_call_id' => $toolCall['id'],
-                        'name' => $name,
-                        'content' => $result,
-                    ];
-                }
+                $this->executeToolCalls($user, $message['tool_calls'], $iterations, $messages, $toolCallsLog);
 
                 continue;
             }
@@ -198,5 +177,38 @@ class AssistantConversationService
         }
 
         return [$reply ?? "Désolé, je n'ai pas pu terminer cette action.", $iterations, $toolCallsLog];
+    }
+
+    /**
+     * Execute every tool call returned by the model and append both the call args and result
+     * to the running message list and tool-call log.
+     *
+     * @param  array<int, array<string, mixed>>  $toolCalls
+     * @param  array<int, array<string, mixed>>  $messages
+     * @param  array<int, array<string, mixed>>  $toolCallsLog
+     */
+    private function executeToolCalls(User $user, array $toolCalls, int $iteration, array &$messages, array &$toolCallsLog): void
+    {
+        foreach ($toolCalls as $toolCall) {
+            $name = $toolCall['function']['name'];
+            $args = json_decode($toolCall['function']['arguments'] ?? '{}', true) ?? [];
+            $args = $this->coercer->coerce($args);
+
+            $result = $this->registry->execute($user, $name, $args);
+
+            $toolCallsLog[] = [
+                'iteration' => $iteration,
+                'name' => $name,
+                'arguments' => $args,
+                'result' => $result,
+            ];
+
+            $messages[] = [
+                'role' => 'tool',
+                'tool_call_id' => $toolCall['id'],
+                'name' => $name,
+                'content' => $result,
+            ];
+        }
     }
 }

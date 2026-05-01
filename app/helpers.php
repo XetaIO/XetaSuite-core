@@ -43,6 +43,6 @@ if (! function_exists('isOnHeadquarters')) {
      */
     function isOnHeadquarters(): bool
     {
-        return app(\XetaSuite\Services\UserContextService::class)->isOnHeadquarters();
+        return (bool) session('is_on_headquarters', false);
     }
 }
