@@ -9,12 +9,15 @@ use Illuminate\Validation\Rule;
 use XetaSuite\Enums\Maintenances\MaintenanceRealization;
 use XetaSuite\Enums\Maintenances\MaintenanceStatus;
 use XetaSuite\Enums\Maintenances\MaintenanceType;
+use XetaSuite\Http\Requests\Concerns\SiteScopedRules;
 use XetaSuite\Models\Item;
 use XetaSuite\Models\Maintenance;
 use XetaSuite\Models\User;
 
 class StoreMaintenanceRequest extends FormRequest
 {
+    use SiteScopedRules;
+
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -34,7 +37,7 @@ class StoreMaintenanceRequest extends FormRequest
             'material_id' => [
                 'nullable',
                 'integer',
-                Rule::exists('materials', 'id')->where('site_id', session('current_site_id')),
+                $this->existsOnCurrentSite('materials'),
             ],
             'description' => ['required', 'string', 'max:5000'],
             'reason' => ['required', 'string', 'max:5000'],
@@ -48,7 +51,7 @@ class StoreMaintenanceRequest extends FormRequest
             'incident_ids' => ['nullable', 'array'],
             'incident_ids.*' => [
                 'integer',
-                Rule::exists('incidents', 'id')->where('site_id', session('current_site_id')),
+                $this->existsOnCurrentSite('incidents'),
             ],
 
             'operator_ids' => ['nullable', 'array'],
@@ -62,7 +65,7 @@ class StoreMaintenanceRequest extends FormRequest
             'item_movements.*.item_id' => [
                 'required_with:item_movements',
                 'integer',
-                Rule::exists('items', 'id')->where('site_id', session('current_site_id')),
+                $this->existsOnCurrentSite('items'),
             ],
             'item_movements.*.quantity' => ['required_with:item_movements', 'integer', 'min:1'],
         ];

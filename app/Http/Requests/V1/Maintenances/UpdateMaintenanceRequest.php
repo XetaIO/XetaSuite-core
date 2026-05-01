@@ -9,10 +9,13 @@ use Illuminate\Validation\Rule;
 use XetaSuite\Enums\Maintenances\MaintenanceRealization;
 use XetaSuite\Enums\Maintenances\MaintenanceStatus;
 use XetaSuite\Enums\Maintenances\MaintenanceType;
+use XetaSuite\Http\Requests\Concerns\SiteScopedRules;
 use XetaSuite\Models\User;
 
 class UpdateMaintenanceRequest extends FormRequest
 {
+    use SiteScopedRules;
+
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -42,7 +45,7 @@ class UpdateMaintenanceRequest extends FormRequest
             'incident_ids' => ['sometimes', 'array'],
             'incident_ids.*' => [
                 'integer',
-                Rule::exists('incidents', 'id')->where('site_id', session('current_site_id')),
+                $this->existsOnCurrentSite('incidents'),
             ],
 
             'operator_ids' => ['sometimes', 'array'],

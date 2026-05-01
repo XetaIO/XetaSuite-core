@@ -7,9 +7,12 @@ namespace XetaSuite\Http\Requests\V1\Cleanings;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use XetaSuite\Enums\Cleanings\CleaningType;
+use XetaSuite\Http\Requests\Concerns\SiteScopedRules;
 
 class UpdateCleaningRequest extends FormRequest
 {
+    use SiteScopedRules;
+
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -30,7 +33,7 @@ class UpdateCleaningRequest extends FormRequest
                 'sometimes',
                 'required',
                 'integer',
-                Rule::exists('materials', 'id')->where('site_id', session('current_site_id')),
+                $this->existsOnCurrentSite('materials'),
             ],
             'description' => ['sometimes', 'required', 'string', 'max:5000'],
             'type' => ['sometimes', 'required', Rule::enum(CleaningType::class)],
