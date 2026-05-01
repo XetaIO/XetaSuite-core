@@ -15,6 +15,7 @@
         "endroid/qr-code": "^6.0",
         "laravel/fortify": "^1.0",
         "laravel/framework": "^13.0",
+        "laravel/mcp": "^0.7",
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^3.0",
         "laravolt/avatar": "^6.0",

@@ -6,6 +6,7 @@ namespace XetaSuite\Http\Requests\V1\Users;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\Password;
 use XetaSuite\Models\User;
 
 class StoreUserRequest extends FormRequest
@@ -28,7 +29,7 @@ class StoreUserRequest extends FormRequest
             'email' => ['required', 'email', 'max:255', 'unique:users,email'],
             'first_name' => ['required', 'string', 'max:255'],
             'last_name' => ['required', 'string', 'max:255'],
-            'password' => ['nullable', 'string', 'min:8'],
+            'password' => ['nullable', 'string', Password::defaults()],
             'locale' => ['nullable', 'string', Rule::in(['fr', 'en'])],
             'office_phone' => ['nullable', 'string', 'max:50'],
             'cell_phone' => ['nullable', 'string', 'max:50'],

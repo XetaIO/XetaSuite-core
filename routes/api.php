@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use XetaSuite\Http\Controllers\Api\V1\Auth\MobileAuthController;
 use XetaSuite\Http\Controllers\Api\V1\CalendarController;
 use XetaSuite\Http\Controllers\Api\V1\CalendarEventController;
 use XetaSuite\Http\Controllers\Api\V1\CleaningController;
@@ -18,6 +19,7 @@ use XetaSuite\Http\Controllers\Api\V1\MaintenanceController;
 use XetaSuite\Http\Controllers\Api\V1\MaterialController;
 use XetaSuite\Http\Controllers\Api\V1\NotificationController;
 use XetaSuite\Http\Controllers\Api\V1\PermissionController;
+use XetaSuite\Http\Controllers\Api\V1\PersonalAccessTokenController;
 use XetaSuite\Http\Controllers\Api\V1\QrCodeScanController;
 use XetaSuite\Http\Controllers\Api\V1\RoleController;
 use XetaSuite\Http\Controllers\Api\V1\SettingsController;
@@ -26,6 +28,8 @@ use XetaSuite\Http\Controllers\Api\V1\UserController;
 use XetaSuite\Http\Controllers\Api\V1\UserLocaleController;
 use XetaSuite\Http\Controllers\Api\V1\UserPasswordController;
 use XetaSuite\Http\Controllers\Api\V1\UserSiteController;
+use XetaSuite\Http\Controllers\Api\V1\AssistantChatController;
+use XetaSuite\Http\Controllers\Api\V1\AssistantConversationController;
 use XetaSuite\Http\Controllers\Api\V1\ZoneController;
 use XetaSuite\Http\Resources\V1\Users\UserDetailResource;
 
@@ -34,7 +38,12 @@ use XetaSuite\Http\Resources\V1\Users\UserDetailResource;
  | API Routes
  |--------------------------------------------------------------------------
  */
-Route::group(['prefix' => 'v1', 'middleware' => 'auth:sanctum'], function () {
+
+// Mobile authentication (no CSRF, returns Bearer PAT)
+Route::post('/v1/auth/mobile-login', [MobileAuthController::class, 'login'])
+    ->middleware('throttle:mobile-login');
+
+Route::group(['prefix' => 'v1', 'middleware' => ['auth:sanctum', 'throttle:api']], function () {
 
     // Dashboard stats & charts
     Route::get('/dashboard/stats', [DashboardController::class, 'stats']);
@@ -57,6 +66,11 @@ Route::group(['prefix' => 'v1', 'middleware' => 'auth:sanctum'], function () {
 
     // Update user password
     Route::put('/user/password', UserPasswordController::class);
+
+    // Personal Access Tokens (MCP authentication)
+    Route::get('/tokens', [PersonalAccessTokenController::class, 'index']);
+    Route::post('/tokens', [PersonalAccessTokenController::class, 'store']);
+    Route::delete('/tokens/{tokenId}', [PersonalAccessTokenController::class, 'destroy']);
 
     // Notifications (authenticated user)
     Route::get('notifications', [NotificationController::class, 'index']);
@@ -191,5 +205,14 @@ Route::group(['prefix' => 'v1', 'middleware' => 'auth:sanctum'], function () {
     Route::get('calendar-events/available-event-categories', [CalendarEventController::class, 'availableEventCategories']);
     Route::apiResource('calendar-events', CalendarEventController::class);
     Route::patch('calendar-events/{calendar_event}/dates', [CalendarEventController::class, 'updateDates']);
+
+    // Voice Assistant (mobile — proxies AI API server-side to protect the API key)
+    Route::post('assistant/chat', [AssistantChatController::class, 'chat'])->middleware('throttle:assistant-chat');
+
+    // Assistant conversations (threaded history per user × site)
+    Route::get('assistant/conversations', [AssistantConversationController::class, 'index']);
+    Route::post('assistant/conversations', [AssistantConversationController::class, 'store']);
+    Route::get('assistant/conversations/{assistant_conversation}', [AssistantConversationController::class, 'show']);
+    Route::delete('assistant/conversations/{assistant_conversation}', [AssistantConversationController::class, 'destroy']);
 
 });

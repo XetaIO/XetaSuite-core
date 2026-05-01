@@ -110,7 +110,7 @@ describe('index', function (): void {
         ]);
 
         $response = $this->actingAs($user)
-            ->getJson('/api/v1/calendar-events?start=' . now()->startOfWeek()->toDateString() . '&end=' . now()->endOfWeek()->toDateString());
+            ->getJson('/api/v1/calendar-events?start=' . now()->startOfWeek()->toDateString() . '&end=' . now()->endOfWeek()->addDay()->toDateString());
 
         $response->assertOk()
             ->assertJsonCount(1, 'data')

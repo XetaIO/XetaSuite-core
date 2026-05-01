@@ -23,10 +23,11 @@ Route::prefix('api/v1')->middleware(['web'])->group(function () {
         Route::post('/login', [AuthenticatedSessionController::class, 'store']);
         Route::post('/logout', [AuthenticatedSessionController::class, 'destroy']);
 
-        // Password reset (with reCAPTCHA protection)
+        // Password reset (with reCAPTCHA protection + rate limiting)
         Route::post('/forgot-password', [ForgotPasswordController::class, 'store'])
-            ->middleware('recaptcha:forgot_password');
-        Route::post('/reset-password', [NewPasswordController::class, 'store']);
+            ->middleware(['recaptcha:forgot_password', 'throttle:password-reset']);
+        Route::post('/reset-password', [NewPasswordController::class, 'store'])
+            ->middleware('throttle:password-reset');
 
         // Password setup (for new users)
         Route::get('/setup-password/{id}/{hash}', [SetupPasswordController::class, 'verify'])
@@ -34,7 +35,7 @@ Route::prefix('api/v1')->middleware(['web'])->group(function () {
         Route::post('/setup-password/{id}/{hash}', [SetupPasswordController::class, 'store'])
             ->name('auth.password.setup.store');
         Route::post('/setup-password-resend', [SetupPasswordController::class, 'resend'])
-            ->middleware('recaptcha:resend_setup_password')
+            ->middleware(['recaptcha:resend_setup_password', 'throttle:password-reset'])
             ->name('auth.password.setup.resend');
     });
 });

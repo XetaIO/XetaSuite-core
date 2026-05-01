@@ -87,6 +87,8 @@ class RolesAndPermissionsSeeder extends Seeder
                     'item-movement.delete',
                     'item-movement.export',
                     'item-movement.viewOthersSites',
+
+                    'assistant.use',
                 ],
                 'level' => 50,
             ],
@@ -122,6 +124,8 @@ class RolesAndPermissionsSeeder extends Seeder
                     'item-movement.view',
                     'item-movement.create',
                     'item-movement.update',
+
+                    'assistant.use',
                 ],
                 'level' => 10,
             ],
