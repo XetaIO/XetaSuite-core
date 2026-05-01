@@ -7,28 +7,14 @@ namespace XetaSuite\Policies;
 use Illuminate\Auth\Access\HandlesAuthorization;
 use XetaSuite\Models\Cleaning;
 use XetaSuite\Models\User;
+use XetaSuite\Policies\Concerns\RestrictsCrudToRegularSites;
 
 class CleaningPolicy
 {
     use HandlesAuthorization;
+    use RestrictsCrudToRegularSites;
 
-    /**
-     * Perform pre-authorization checks.
-     */
-    public function before(User $user, string $ability): bool|null
-    {
-        // Disallow any creation, modification and deletion from HQ
-        if (isOnHeadquarters() && in_array($ability, ['create', 'update', 'delete'], true)) {
-            return false;
-        }
-
-        // HQ : can see an cleaning
-        if (isOnHeadquarters() && $ability === 'view') {
-            return $user->can('cleaning.view');
-        }
-
-        return null;
-    }
+    protected string $hqViewPermission = 'cleaning.view';
 
     /**
      * Determine whether the user can view the list of cleanings.

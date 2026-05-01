@@ -10,6 +10,10 @@ use XetaSuite\Models\User;
 
 class UpdateMaintenance
 {
+    public function __construct(private readonly SyncMaintenanceRelationships $syncRelationships)
+    {
+    }
+
     /**
      * Update an existing maintenance.
      *
@@ -36,29 +40,8 @@ class UpdateMaintenance
 
             // Note: material_id cannot be changed after creation
 
-            // Sync incidents
-            if (isset($data['incident_ids'])) {
-                // First, remove maintenance_id from all current incidents
-                $maintenance->incidents()->update(['maintenance_id' => null]);
-
-                // Then, set maintenance_id for the new selection
-                if (is_array($data['incident_ids']) && count($data['incident_ids']) > 0) {
-                    \XetaSuite\Models\Incident::whereIn('id', $data['incident_ids'])
-                        ->where('site_id', $siteId)
-                        ->update(['maintenance_id' => $maintenance->id]);
-                }
-                $maintenance->updateQuietly(['incident_count' => count($data['incident_ids'])]);
-            }
-
-            // Sync operators
-            if (isset($data['operator_ids'])) {
-                $maintenance->operators()->sync($data['operator_ids'] ?? []);
-            }
-
-            // Sync companies
-            if (isset($data['company_ids'])) {
-                $maintenance->companies()->sync($data['company_ids'] ?? []);
-            }
+            // Sync incidents, operators and external companies
+            $this->syncRelationships->handle($maintenance, $siteId, $data);
 
             return $maintenance->fresh([
                 'material',

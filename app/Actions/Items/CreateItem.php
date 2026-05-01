@@ -12,6 +12,10 @@ use XetaSuite\Models\User;
 
 class CreateItem
 {
+    public function __construct(private readonly SyncItemRelationships $syncRelationships)
+    {
+    }
+
     /**
      * Create a new item.
      *
@@ -38,15 +42,7 @@ class CreateItem
                 'number_critical_minimum' => $data['number_critical_minimum'] ?? 0,
             ]);
 
-            // Attach materials if provided
-            if (! empty($data['material_ids'])) {
-                $item->materials()->attach($data['material_ids']);
-            }
-
-            // Attach recipients for critical alerts if provided
-            if (! empty($data['recipient_ids'])) {
-                $item->recipients()->attach($data['recipient_ids']);
-            }
+            $this->syncRelationships->handle($item, $data, isCreating: true);
 
             // Create initial price history if current_price is set
             if (($data['current_price'] ?? 0) > 0) {

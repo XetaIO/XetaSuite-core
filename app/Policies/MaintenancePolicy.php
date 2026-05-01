@@ -7,28 +7,14 @@ namespace XetaSuite\Policies;
 use Illuminate\Auth\Access\HandlesAuthorization;
 use XetaSuite\Models\Maintenance;
 use XetaSuite\Models\User;
+use XetaSuite\Policies\Concerns\RestrictsCrudToRegularSites;
 
 class MaintenancePolicy
 {
     use HandlesAuthorization;
+    use RestrictsCrudToRegularSites;
 
-    /**
-     * Perform pre-authorization checks.
-     */
-    public function before(User $user, string $ability): bool|null
-    {
-        // Disallow any creation, modification and deletion from HQ
-        if (isOnHeadquarters() && in_array($ability, ['create', 'update', 'delete'], true)) {
-            return false;
-        }
-
-        // HQ : can see an maintenance
-        if (isOnHeadquarters() && $ability === 'view') {
-            return $user->can('maintenance.view');
-        }
-
-        return null;
-    }
+    protected string $hqViewPermission = 'maintenance.view';
 
     /**
      * Determine whether the user can view the list of maintenances.

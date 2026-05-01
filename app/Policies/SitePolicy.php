@@ -7,24 +7,12 @@ namespace XetaSuite\Policies;
 use Illuminate\Auth\Access\HandlesAuthorization;
 use XetaSuite\Models\Site;
 use XetaSuite\Models\User;
+use XetaSuite\Policies\Concerns\RestrictsToHeadquarters;
 
 class SitePolicy
 {
     use HandlesAuthorization;
-
-    /**
-     * Determine whether the user is on the headquarters site before checking specific abilities.
-     * Sites can only be managed from the headquarters site.
-     */
-    public function before(User $user, string $ability): ?bool
-    {
-        // Sites can only be managed from the headquarters site
-        if (! isOnHeadquarters()) {
-            return false;
-        }
-
-        return null;
-    }
+    use RestrictsToHeadquarters;
 
     /**
      * Determine whether the user can view the list of sites.

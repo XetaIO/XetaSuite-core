@@ -7,23 +7,12 @@ namespace XetaSuite\Policies;
 use Illuminate\Auth\Access\HandlesAuthorization;
 use XetaSuite\Models\Company;
 use XetaSuite\Models\User;
+use XetaSuite\Policies\Concerns\RestrictsCrudToHeadquarters;
 
 class CompanyPolicy
 {
     use HandlesAuthorization;
-
-    /**
-     * Perform pre-authorization checks.
-     */
-    public function before(User $user, string $ability): bool|null
-    {
-        // Disallow any creation, modification and deletion from non-HQ
-        if (!isOnHeadquarters() && in_array($ability, ['create', 'update', 'delete'], true)) {
-            return false;
-        }
-
-        return null;
-    }
+    use RestrictsCrudToHeadquarters;
 
     /**
      * Determine whether the user can view the list of companies.
