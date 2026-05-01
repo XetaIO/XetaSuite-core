@@ -371,6 +371,31 @@ describe('store', function (): void {
         expect($item->item_exit_count)->toBe(1);
     });
 
+    it('can create exit movement without movement_date (defaults to now)', function (): void {
+        $user = createUserOnRegularSite($this->regularSite, $this->role);
+
+        $item = Item::factory()
+            ->forSite($this->regularSite)
+            ->createdBy($user)
+            ->create([
+                'item_entry_total' => 20,
+                'item_exit_total' => 0,
+                'item_exit_count' => 0,
+            ]);
+
+        $response = $this->actingAs($user)
+            ->postJson("/api/v1/items/{$item->id}/movements", [
+                'type' => 'exit',
+                'quantity' => 5,
+            ]);
+
+        $response->assertStatus(201)
+            ->assertJsonPath('data.type', 'exit');
+
+        $movement = ItemMovement::query()->latest('id')->first();
+        expect($movement->movement_date)->not->toBeNull();
+    });
+
     it('validates required fields', function (): void {
         $user = createUserOnRegularSite($this->regularSite, $this->role);
 

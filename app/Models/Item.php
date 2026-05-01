@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Xetaio\Counts\Concerns\HasCounts;
+use XetaSuite\Models\Concerns\HasStockQueries;
 use XetaSuite\Models\Concerns\SiteScoped;
 use XetaSuite\Models\Presenters\ItemPresenter;
 use XetaSuite\Observers\ItemObserver;
@@ -20,6 +21,7 @@ class Item extends Model
 {
     use HasCounts;
     use HasFactory;
+    use HasStockQueries;
     use ItemPresenter;
     use SiteScoped;
 
