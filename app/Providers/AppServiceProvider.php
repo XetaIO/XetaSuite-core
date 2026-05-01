@@ -76,6 +76,9 @@ class AppServiceProvider extends ServiceProvider
             return new Settings($app['cache.store']);
         });
 
+        // Per-request user/site context cache.
+        $this->app->scoped(\XetaSuite\Services\UserContextService::class);
+
         // Bind the AI provider interface to the configured implementation
         $this->app->bind(LlmProvider::class, function (): LlmProvider {
             return match (config('services.ai.provider')) {
