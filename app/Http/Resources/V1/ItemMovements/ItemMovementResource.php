@@ -6,9 +6,11 @@ namespace XetaSuite\Http\Resources\V1\ItemMovements;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use XetaSuite\Http\Resources\V1\Concerns\FormatsRelations;
 
 class ItemMovementResource extends JsonResource
 {
+    use FormatsRelations;
     /**
      * Transform the resource into an array.
      */
@@ -30,10 +32,7 @@ class ItemMovementResource extends JsonResource
             // Creator info
             'created_by_id' => $this->created_by_id,
             'created_by_name' => $this->created_by_name,
-            'creator' => $this->whenLoaded('creator', fn () => [
-                'id' => $this->creator->id,
-                'full_name' => $this->creator->full_name,
-            ]),
+            'creator' => $this->userRelation('creator'),
 
             // Related entity (maintenance, etc.)
             'movable_type' => $this->movable_type,

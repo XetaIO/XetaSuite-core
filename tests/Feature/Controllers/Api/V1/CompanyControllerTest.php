@@ -384,6 +384,38 @@ describe('update', function (): void {
 
         $response->assertForbidden();
     });
+
+    it('filters out invalid types when updating company', function (): void {
+        $user = createUserOnHeadquarters($this->headquarters, $this->role);
+
+        $company = Company::factory()->create([
+            'types' => ['item_provider'],
+        ]);
+
+        $response = $this->actingAs($user)
+            ->putJson("/api/v1/companies/{$company->id}", [
+                'types' => ['item_provider', 'maintenance_provider'],
+            ]);
+
+        $response->assertOk();
+
+        $company->refresh();
+        expect($company->types->all())->toEqualCanonicalizing(['item_provider', 'maintenance_provider']);
+    });
+
+    it('rejects unknown enum values via validation', function (): void {
+        $user = createUserOnHeadquarters($this->headquarters, $this->role);
+
+        $company = Company::factory()->create();
+
+        $response = $this->actingAs($user)
+            ->putJson("/api/v1/companies/{$company->id}", [
+                'types' => ['hacker_value'],
+            ]);
+
+        $response->assertStatus(422)
+            ->assertJsonValidationErrors(['types.0']);
+    });
 });
 
 // ============================================================================

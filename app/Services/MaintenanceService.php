@@ -160,14 +160,14 @@ class MaintenanceService
     {
         return Item::query()
             ->forCurrentSite()
-            ->whereRaw('(item_entry_total - item_exit_total) > 0')
+            ->whereStockPositive()
             ->when($search, fn (Builder $query, string $s) => $query->where(function (Builder $q) use ($s): void {
                 $q->where('name', 'ILIKE', "%{$s}%")
                     ->orWhere('reference', 'ILIKE', "%{$s}%");
             }))
             ->orderBy('name')
             ->limit(15)
-            ->selectRaw('id, name, reference, (item_entry_total - item_exit_total) as stock, current_price')
+            ->selectRaw('id, name, reference, '.Item::stockExpression().' as stock, current_price')
             ->get()
             ->map(fn ($item) => [
                 'id' => $item->id,

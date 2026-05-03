@@ -241,17 +241,17 @@ class ItemService
     private function applyStockStatusFilter(Builder $query, string $status): Builder
     {
         return match ($status) {
-            'empty' => $query->whereRaw('item_entry_total - item_exit_total <= 0'),
+            'empty' => $query->whereStockEmpty(),
             'critical' => $query->where('number_critical_enabled', true)
-                ->whereRaw('item_entry_total - item_exit_total > 0')
-                ->whereRaw('item_entry_total - item_exit_total <= number_critical_minimum'),
+                ->whereStockPositive()
+                ->whereStockAtMost('number_critical_minimum'),
             'warning' => $query->where('number_warning_enabled', true)
-                ->whereRaw('item_entry_total - item_exit_total > number_critical_minimum')
-                ->whereRaw('item_entry_total - item_exit_total <= number_warning_minimum'),
-            'ok' => $query->whereRaw('item_entry_total - item_exit_total > 0')
+                ->whereStockAbove('number_critical_minimum')
+                ->whereStockAtMost('number_warning_minimum'),
+            'ok' => $query->whereStockPositive()
                 ->where(function (Builder $q): void {
                     $q->where('number_warning_enabled', false)
-                        ->orWhereRaw('item_entry_total - item_exit_total > number_warning_minimum');
+                        ->orWhereStockAbove('number_warning_minimum');
                 }),
             default => $query,
         };

@@ -6,9 +6,12 @@ namespace XetaSuite\Http\Resources\V1\Materials;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use XetaSuite\Http\Resources\V1\Concerns\FormatsRelations;
 
 class MaterialDetailResource extends JsonResource
 {
+    use FormatsRelations;
+
     /**
      * Transform the resource into an array (for detail view).
      */
@@ -19,10 +22,7 @@ class MaterialDetailResource extends JsonResource
             'name' => $this->name,
             'description' => $this->description,
             'site_id' => $this->site_id,
-            'site' => $this->whenLoaded('site', fn () => [
-                'id' => $this->site->id,
-                'name' => $this->site->name,
-            ]),
+            'site' => $this->siteRelation(),
 
             // Zone info
             'zone_id' => $this->zone_id,
@@ -35,11 +35,7 @@ class MaterialDetailResource extends JsonResource
             // Creator info
             'created_by_id' => $this->created_by_id,
             'created_by_name' => $this->created_by_name,
-            'creator' => $this->whenLoaded('creator', fn () => [
-                'id' => $this->creator->id,
-                'full_name' => $this->creator->full_name,
-                'email' => $this->creator->email,
-            ]),
+            'creator' => $this->userRelation('creator', includeEmail: true),
 
             // Cleaning alert configuration
             'cleaning_alert' => $this->cleaning_alert,

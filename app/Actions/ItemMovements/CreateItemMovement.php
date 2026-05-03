@@ -107,7 +107,7 @@ class CreateItemMovement
                 'movable_id' => $relatedModel?->id ?? null,
                 'created_by_id' => $user->id,
                 'notes' => $data['notes'] ?? null,
-                'movement_date' => $movementDate ?? now(),
+                'movement_date' => $data['movement_date'] ?? now(),
             ]);
 
             // Note: item_entry_total/item_exit_total are updated by ItemMovementObserver

@@ -7,11 +7,14 @@ namespace XetaSuite\Http\Requests\V1\Materials;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use XetaSuite\Enums\Materials\CleaningFrequency;
+use XetaSuite\Http\Requests\Concerns\SiteScopedRules;
 use XetaSuite\Models\Material;
 use XetaSuite\Models\User;
 
 class UpdateMaterialRequest extends FormRequest
 {
+    use SiteScopedRules;
+
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -27,16 +30,14 @@ class UpdateMaterialRequest extends FormRequest
     {
         /** @var Material $material */
         // $material = $this->route('material');
-        $currentSiteId = session('current_site_id');
+        $currentSiteId = $this->currentSiteId();
 
         return [
             'zone_id' => [
                 'sometimes',
                 'required',
                 'integer',
-                Rule::exists('zones', 'id')
-                    ->where('site_id', $currentSiteId)
-                    ->where('allow_material', true),
+                $this->existsOnCurrentSite('zones')->where('allow_material', true),
             ],
             'name' => ['sometimes', 'required', 'string', 'max:255'],
             'description' => ['nullable', 'string', 'max:1000'],

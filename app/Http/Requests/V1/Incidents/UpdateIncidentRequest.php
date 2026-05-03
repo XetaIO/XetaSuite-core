@@ -8,9 +8,12 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use XetaSuite\Enums\Incidents\IncidentSeverity;
 use XetaSuite\Enums\Incidents\IncidentStatus;
+use XetaSuite\Http\Requests\Concerns\SiteScopedRules;
 
 class UpdateIncidentRequest extends FormRequest
 {
+    use SiteScopedRules;
+
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -24,20 +27,16 @@ class UpdateIncidentRequest extends FormRequest
      */
     public function rules(): array
     {
-        $currentSiteId = session('current_site_id');
-
         return [
             'material_id' => [
                 'sometimes',
                 'integer',
-                Rule::exists('materials', 'id')
-                    ->where('site_id', $currentSiteId),
+                $this->existsOnCurrentSite('materials'),
             ],
             'maintenance_id' => [
                 'nullable',
                 'integer',
-                Rule::exists('maintenances', 'id')
-                    ->where('site_id', $currentSiteId),
+                $this->existsOnCurrentSite('maintenances'),
             ],
             'description' => ['sometimes', 'string', 'max:5000'],
             'severity' => [

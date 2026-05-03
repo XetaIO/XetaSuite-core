@@ -43,6 +43,6 @@ if (! function_exists('isOnHeadquarters')) {
      */
     function isOnHeadquarters(): bool
     {
-        return session('is_on_headquarters', false);
+        return (bool) session('is_on_headquarters', false);
     }
 }

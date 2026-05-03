@@ -7,24 +7,12 @@ namespace XetaSuite\Policies;
 use Illuminate\Auth\Access\HandlesAuthorization;
 use XetaSuite\Models\Setting;
 use XetaSuite\Models\User;
+use XetaSuite\Policies\Concerns\RestrictsCrudToHeadquarters;
 
 class SettingPolicy
 {
     use HandlesAuthorization;
-
-    /**
-     * Perform pre-authorization checks.
-     * Settings can only be managed from headquarters.
-     */
-    public function before(User $user, string $ability): bool|null
-    {
-        // Disallow any creation, modification and deletion from non-HQ
-        if (! isOnHeadquarters() && in_array($ability, ['create', 'update', 'delete'], true)) {
-            return false;
-        }
-
-        return null;
-    }
+    use RestrictsCrudToHeadquarters;
 
     /**
      * Determine whether the user can view the list of settings.

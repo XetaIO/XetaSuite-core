@@ -6,9 +6,11 @@ namespace XetaSuite\Http\Resources\V1\Zones;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use XetaSuite\Http\Resources\V1\Concerns\FormatsRelations;
 
 class ZoneDetailResource extends JsonResource
 {
+    use FormatsRelations;
     /**
      * Transform the resource into an array (for detail view).
      */
@@ -28,10 +30,7 @@ class ZoneDetailResource extends JsonResource
 
             // Site info
             'site_id' => $this->site_id,
-            'site' => $this->whenLoaded('site', fn () => [
-                'id' => $this->site->id,
-                'name' => $this->site->name,
-            ]),
+            'site' => $this->siteRelation(),
 
             // Children zones
             'children' => $this->whenLoaded('children', fn () => $this->children->map(fn ($child) => [

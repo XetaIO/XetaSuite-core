@@ -7,10 +7,13 @@ namespace XetaSuite\Http\Requests\V1\Incidents;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use XetaSuite\Enums\Incidents\IncidentSeverity;
+use XetaSuite\Http\Requests\Concerns\SiteScopedRules;
 use XetaSuite\Models\Incident;
 
 class StoreIncidentRequest extends FormRequest
 {
+    use SiteScopedRules;
+
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -24,20 +27,16 @@ class StoreIncidentRequest extends FormRequest
      */
     public function rules(): array
     {
-        $currentSiteId = session('current_site_id');
-
         return [
             'material_id' => [
                 'required',
                 'integer',
-                Rule::exists('materials', 'id')
-                    ->where('site_id', $currentSiteId),
+                $this->existsOnCurrentSite('materials'),
             ],
             'maintenance_id' => [
                 'nullable',
                 'integer',
-                Rule::exists('maintenances', 'id')
-                    ->where('site_id', $currentSiteId),
+                $this->existsOnCurrentSite('maintenances'),
             ],
             'description' => ['required', 'string', 'max:5000'],
             'severity' => [

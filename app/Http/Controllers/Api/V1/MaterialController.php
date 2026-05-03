@@ -4,11 +4,6 @@ declare(strict_types=1);
 
 namespace XetaSuite\Http\Controllers\Api\V1;
 
-use Endroid\QrCode\Encoding\Encoding;
-use Endroid\QrCode\ErrorCorrectionLevel;
-use Endroid\QrCode\QrCode;
-use Endroid\QrCode\RoundBlockSizeMode;
-use Endroid\QrCode\Writer\SvgWriter;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use XetaSuite\Actions\Materials\CreateMaterial;
@@ -24,11 +19,13 @@ use XetaSuite\Http\Resources\V1\Materials\MaterialDetailResource;
 use XetaSuite\Http\Resources\V1\Materials\MaterialResource;
 use XetaSuite\Models\Material;
 use XetaSuite\Services\MaterialService;
+use XetaSuite\Services\QrCodeService;
 
 class MaterialController extends Controller
 {
     public function __construct(
-        private readonly MaterialService $materialService
+        private readonly MaterialService $materialService,
+        private readonly QrCodeService $qrCodeService
     ) {
     }
 
@@ -171,28 +168,10 @@ class MaterialController extends Controller
         $this->authorize('generateQrCode', $material);
 
         $size = (int) request('size', 200);
-        $size = max(100, min(400, $size)); // Limit between 100 and 400
-
         $url = config('app.spa_url').'?source=qr&material='.$material->id;
 
-        $qrCode = new QrCode(
-            data: $url,
-            encoding: new Encoding('UTF-8'),
-            errorCorrectionLevel: ErrorCorrectionLevel::High,
-            size: $size,
-            margin: 10,
-            roundBlockSizeMode: RoundBlockSizeMode::Margin,
-        );
-
-        $writer = new SvgWriter();
-        $result = $writer->write($qrCode);
-
         return response()->json([
-            'data' => [
-                'svg' => base64_encode($result->getString()),
-                'url' => $url,
-                'size' => $size,
-            ],
+            'data' => $this->qrCodeService->generateSvg($url, $size),
         ]);
     }
 

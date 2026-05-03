@@ -12,6 +12,10 @@ use XetaSuite\Models\User;
 
 class UpdateItem
 {
+    public function __construct(private readonly SyncItemRelationships $syncRelationships)
+    {
+    }
+
     /**
      * Update an existing item with new data.
      *
@@ -44,15 +48,8 @@ class UpdateItem
                 'number_critical_minimum' => $data['number_critical_minimum'] ?? $item->number_critical_minimum,
             ]);
 
-            // Sync materials if provided
-            if (array_key_exists('material_ids', $data)) {
-                $item->materials()->sync($data['material_ids'] ?? []);
-            }
-
-            // Sync recipients if provided
-            if (array_key_exists('recipient_ids', $data)) {
-                $item->recipients()->sync($data['recipient_ids'] ?? []);
-            }
+            // Sync materials and recipients if provided
+            $this->syncRelationships->handle($item, $data, isCreating: false);
 
             // Record price change in history via queue if price or company changed
             if ($priceChanged || $companyChanged) {

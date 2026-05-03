@@ -6,9 +6,11 @@ namespace XetaSuite\Http\Resources\V1\Incidents;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use XetaSuite\Http\Resources\V1\Concerns\FormatsRelations;
 
 class IncidentResource extends JsonResource
 {
+    use FormatsRelations;
     /**
      * Transform the resource into an array (for list view).
      */
@@ -24,10 +26,7 @@ class IncidentResource extends JsonResource
 
             // Site info
             'site_id' => $this->site_id,
-            'site' => $this->whenLoaded('site', fn () => [
-                'id' => $this->site->id,
-                'name' => $this->site->name,
-            ]),
+            'site' => $this->siteRelation(),
 
             // Material info
             'material_id' => $this->material_id,
@@ -47,10 +46,7 @@ class IncidentResource extends JsonResource
             // Reporter info
             'reported_by_id' => $this->reported_by_id,
             'reported_by_name' => $this->reported_by_name,
-            'reporter' => $this->whenLoaded('reporter', fn () => $this->reporter ? [
-                'id' => $this->reporter->id,
-                'full_name' => $this->reporter->full_name,
-            ] : null),
+            'reporter' => $this->userRelation('reporter'),
 
             // Dates
             'started_at' => $this->started_at?->toISOString(),

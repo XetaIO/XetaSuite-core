@@ -7,23 +7,12 @@ namespace XetaSuite\Policies;
 use Illuminate\Auth\Access\HandlesAuthorization;
 use XetaSuite\Models\Role;
 use XetaSuite\Models\User;
+use XetaSuite\Policies\Concerns\RestrictsToHeadquarters;
 
 class RolePolicy
 {
     use HandlesAuthorization;
-
-    /**
-     * Perform pre-authorization checks.
-     * Only HQ users can manage roles.
-     */
-    public function before(User $user, string $ability): ?bool
-    {
-        if (! isOnHeadquarters()) {
-            return false;
-        }
-
-        return null;
-    }
+    use RestrictsToHeadquarters;
 
     /**
      * Determine whether the user can view the list of roles.

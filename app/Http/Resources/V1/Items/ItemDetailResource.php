@@ -6,10 +6,13 @@ namespace XetaSuite\Http\Resources\V1\Items;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use XetaSuite\Http\Resources\V1\Concerns\FormatsRelations;
 use XetaSuite\Services\ItemService;
 
 class ItemDetailResource extends JsonResource
 {
+    use FormatsRelations;
+
     /**
      * Transform the resource into an array (for detail view).
      */
@@ -25,10 +28,7 @@ class ItemDetailResource extends JsonResource
 
             // Site info
             'site_id' => $this->site_id,
-            'site' => $this->whenLoaded('site', fn () => [
-                'id' => $this->site->id,
-                'name' => $this->site->name,
-            ]),
+            'site' => $this->siteRelation(),
 
             // Company info
             'company_id' => $this->company_id,
@@ -42,18 +42,11 @@ class ItemDetailResource extends JsonResource
             // Creator info
             'created_by_id' => $this->created_by_id,
             'created_by_name' => $this->created_by_name,
-            'creator' => $this->whenLoaded('creator', fn () => [
-                'id' => $this->creator->id,
-                'full_name' => $this->creator->full_name,
-                'email' => $this->creator->email,
-            ]),
+            'creator' => $this->userRelation('creator', includeEmail: true),
 
             // Editor info
             'edited_by_id' => $this->edited_by_id,
-            'editor' => $this->whenLoaded('editor', fn () => $this->editor ? [
-                'id' => $this->editor->id,
-                'full_name' => $this->editor->full_name,
-            ] : null),
+            'editor' => $this->userRelation('editor'),
 
             // Pricing
             'current_price' => (float) $this->current_price,

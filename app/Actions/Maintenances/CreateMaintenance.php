@@ -9,7 +9,6 @@ use XetaSuite\Actions\ItemMovements\CreateItemMovement;
 use XetaSuite\Enums\Maintenances\MaintenanceRealization;
 use XetaSuite\Enums\Maintenances\MaintenanceStatus;
 use XetaSuite\Enums\Maintenances\MaintenanceType;
-use XetaSuite\Models\Incident;
 use XetaSuite\Models\Item;
 use XetaSuite\Models\Maintenance;
 use XetaSuite\Models\Material;
@@ -19,6 +18,7 @@ class CreateMaintenance
 {
     public function __construct(
         private CreateItemMovement $createItemMovement,
+        private SyncMaintenanceRelationships $syncRelationships,
     ) {
     }
 
@@ -50,27 +50,8 @@ class CreateMaintenance
                 'resolved_at' => $data['resolved_at'] ?? null,
             ]);
 
-            // Sync incidents
-            if (isset($data['incident_ids']) && is_array($data['incident_ids'])) {
-                $maintenance->incidents()->update(['maintenance_id' => null]); // Clear existing
-
-                if (count($data['incident_ids']) > 0) {
-                    Incident::whereIn('id', $data['incident_ids'])
-                        ->where('site_id', $siteId)
-                        ->update(['maintenance_id' => $maintenance->id]);
-                }
-                $maintenance->updateQuietly(['incident_count' => count($data['incident_ids'])]);
-            }
-
-            // Sync operators (for internal/both realization)
-            if (isset($data['operator_ids']) && is_array($data['operator_ids'])) {
-                $maintenance->operators()->sync($data['operator_ids']);
-            }
-
-            // Sync companies (for external/both realization)
-            if (isset($data['company_ids']) && is_array($data['company_ids'])) {
-                $maintenance->companies()->sync($data['company_ids']);
-            }
+            // Sync incidents, operators and external companies
+            $this->syncRelationships->handle($maintenance, $siteId, $data);
 
             // Create item movements (spare parts exit)
             if (isset($data['item_movements']) && is_array($data['item_movements'])) {

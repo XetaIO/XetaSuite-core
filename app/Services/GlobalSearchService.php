@@ -6,82 +6,19 @@ namespace XetaSuite\Services;
 
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Gate;
-use XetaSuite\Models\Company;
-use XetaSuite\Models\Incident;
-use XetaSuite\Models\Item;
-use XetaSuite\Models\Maintenance;
-use XetaSuite\Models\Material;
 use XetaSuite\Models\Site;
-use XetaSuite\Models\Zone;
 
 class GlobalSearchService
 {
-    private const RESULTS_PER_TYPE = 5;
-
-    /**
-     * Searchable types with their configuration.
-     * Key: type name used in API response
-     * Value: [model class, permission, search columns, relations to load, route prefix]
-     */
-    private const SEARCHABLE_TYPES = [
-        'materials' => [
-            'model' => Material::class,
-            'permission' => 'material.view',
-            'columns' => ['name', 'description'],
-            'relations' => ['zone', 'site'],
-            'hq_only' => false,
-        ],
-        'zones' => [
-            'model' => Zone::class,
-            'permission' => 'zone.view',
-            'columns' => ['name'],
-            'relations' => ['site', 'parent'],
-            'hq_only' => false,
-        ],
-        'items' => [
-            'model' => Item::class,
-            'permission' => 'item.view',
-            'columns' => ['name', 'reference', 'description'],
-            'relations' => ['site', 'company'],
-            'hq_only' => false,
-        ],
-        'incidents' => [
-            'model' => Incident::class,
-            'permission' => 'incident.view',
-            'columns' => ['description'],
-            'relations' => ['site', 'material', 'reporter'],
-            'hq_only' => false,
-        ],
-        'maintenances' => [
-            'model' => Maintenance::class,
-            'permission' => 'maintenance.view',
-            'columns' => ['description', 'reason'],
-            'relations' => ['site', 'material'],
-            'hq_only' => false,
-        ],
-        'companies' => [
-            'model' => Company::class,
-            'permission' => 'company.view',
-            'columns' => ['name', 'description'],
-            'relations' => [],
-            'hq_only' => false,
-        ],
-        'sites' => [
-            'model' => Site::class,
-            'permission' => 'site.view',
-            'columns' => ['name'],
-            'relations' => [],
-            'hq_only' => true,
-        ],
-    ];
-
     /**
      * Perform a global search across all authorized types.
      *
      * @return array{results: array<string, array>, total: int, query: string}
      */
-    public function search(string $query, int $perType = self::RESULTS_PER_TYPE): array
+    public function search(string $query, ?int $perType = null): array
     {
+        $perType ??= (int) config('search.results_per_type', 5);
+
         $query = trim($query);
 
         if (strlen($query) < 2) {
@@ -96,7 +33,7 @@ class GlobalSearchService
         $total = 0;
         $isOnHq = isOnHeadquarters();
 
-        foreach (self::SEARCHABLE_TYPES as $type => $config) {
+        foreach ($this->searchableTypes() as $type => $config) {
             // Skip HQ-only types if not on HQ
             if ($config['hq_only'] && ! $isOnHq) {
                 continue;
@@ -264,7 +201,7 @@ class GlobalSearchService
         $types = [];
         $isOnHq = isOnHeadquarters();
 
-        foreach (self::SEARCHABLE_TYPES as $type => $config) {
+        foreach ($this->searchableTypes() as $type => $config) {
             if ($config['hq_only'] && ! $isOnHq) {
                 continue;
             }
@@ -275,5 +212,13 @@ class GlobalSearchService
         }
 
         return $types;
+    }
+
+    /**
+     * @return array<string, array<string, mixed>>
+     */
+    private function searchableTypes(): array
+    {
+        return (array) config('search.searchable_types', []);
     }
 }
