@@ -224,7 +224,6 @@ class MaintenanceService
     {
         return $query->where(function (Builder $q) use ($search): void {
             $q->where('description', 'ILIKE', "%{$search}%")
-                ->orWhere('reason', 'ILIKE', "%{$search}%")
                 ->orWhereHas('material', fn (Builder $mq) => $mq->where('name', 'ILIKE', "%{$search}%"));
         });
     }

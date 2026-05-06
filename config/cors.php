@@ -20,11 +20,7 @@ return [
     'allowed_methods' => ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
 
     'allowed_origins' => array_filter([
-        env('SPA_URL'),
-        env('APP_ENV') === 'local' ? 'http://localhost:5173' : null,
-        env('APP_ENV') === 'local' ? 'http://xetasuite.test' : null,
-        env('APP_ENV') === 'local' ? 'https://xetasuite.test' : null,
-        env('APP_ENV') === 'local' ? 'http://localhost:8081' : null,
+        env('SPA_URL')
     ]),
 
     'allowed_origins_patterns' => [],

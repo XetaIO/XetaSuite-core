@@ -5,7 +5,6 @@ return [
     'material' => 'Matériel',
     'incidents' => 'Incidents',
     'description' => 'Description',
-    'reason' => 'Raison',
     'type' => 'Type',
     'realization' => 'Réalisation',
     'status' => 'Statut',

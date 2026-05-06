@@ -28,7 +28,6 @@ class CreateMaintenanceTool extends Tool
         $request->validate([
             'material_id' => 'nullable|integer',
             'description' => 'required|string',
-            'reason' => 'required|string',
             'type' => 'nullable|string|in:corrective,preventive',
             'realization' => 'nullable|string|in:internal,external,both',
             'status' => 'nullable|string|in:planned,in_progress,resolved',
@@ -45,7 +44,6 @@ class CreateMaintenanceTool extends Tool
         $maintenance = app(CreateMaintenance::class)->handle($user, [
             'material_id' => $request->get('material_id'),
             'description' => $request->get('description'),
-            'reason' => $request->get('reason'),
             'type' => $request->get('type'),
             'realization' => $request->get('realization'),
             'status' => $request->get('status'),
@@ -65,7 +63,6 @@ class CreateMaintenanceTool extends Tool
             'site_id' => $schema->integer()->description('Site ID (optional)'),
             'material_id' => $schema->integer()->description('ID of the equipment'),
             'description' => $schema->string()->description('Description of the maintenance')->required(),
-            'reason' => $schema->string()->description('Reason for the maintenance')->required(),
             'type' => $schema->string()->description('Type: corrective or preventive'),
             'realization' => $schema->string()->description('Realization: internal, external, or both'),
             'status' => $schema->string()->description('Initial status: planned, in_progress, or resolved'),

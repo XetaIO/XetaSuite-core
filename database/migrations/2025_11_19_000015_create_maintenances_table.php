@@ -45,7 +45,6 @@ return new class () extends Migration {
                 ->nullOnDelete();
 
             $table->mediumText('description');
-            $table->text('reason');
 
             $table->string('type', 50)->default('corrective')->index();
             $table->string('realization', 50)->default('external')->index();

@@ -196,8 +196,7 @@ class MaterialService
             ->with(['creator', 'operators', 'companies', 'material'])
             ->when($filters['search'] ?? null, function (Builder $query, string $search): void {
                 $query->where(function (Builder $q) use ($search): void {
-                    $q->where('description', 'ILIKE', "%{$search}%")
-                        ->orWhere('reason', 'ILIKE', "%{$search}%");
+                    $q->where('description', 'ILIKE', "%{$search}%");
                 });
             })
             ->orderByDesc('created_at')

@@ -29,15 +29,20 @@ class ResetDemoDatabase extends Command
             return self::FAILURE;
         }
 
-        $this->info('Resetting demo database...');
+        $this->call('down', ['--retry' => 10]);
 
-        // Refresh the database with migrations and seeders
-        $this->call('migrate:fresh', [
-            '--force' => true,
-            '--seed' => true,
-        ]);
+        try {
+            $this->info('Resetting demo database...');
 
-        $this->info('Demo database has been reset successfully!');
+            $this->call('migrate:fresh', [
+                '--force' => true,
+                '--seed' => true,
+            ]);
+
+            $this->info('Demo database has been reset successfully!');
+        } finally {
+            $this->call('up');
+        }
 
         return self::SUCCESS;
     }

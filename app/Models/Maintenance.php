@@ -38,7 +38,6 @@ class Maintenance extends Model
         'created_by_name',
         'edited_by_id',
         'description',
-        'reason',
         'type',
         'realization',
         'status',

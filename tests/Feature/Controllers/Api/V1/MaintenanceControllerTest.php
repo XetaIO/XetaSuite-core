@@ -174,7 +174,6 @@ describe('show', function (): void {
                 'data' => [
                     'id',
                     'description',
-                    'reason',
                     'type',
                     'type_label',
                     'realization',
@@ -217,7 +216,6 @@ describe('store', function (): void {
 
         $response = $this->actingAs($user)->postJson('/api/v1/maintenances', [
             'description' => 'Test maintenance description',
-            'reason' => 'Test reason',
             'realization' => 'internal',
             'operator_ids' => [$user->id],
         ]);
@@ -237,7 +235,6 @@ describe('store', function (): void {
         $response = $this->actingAs($user)->postJson('/api/v1/maintenances', [
             'material_id' => $this->material->id,
             'description' => 'Repair material',
-            'reason' => 'Malfunction',
             'type' => 'corrective',
             'realization' => 'internal',
             'operator_ids' => [$user->id],
@@ -263,7 +260,6 @@ describe('store', function (): void {
 
         $response = $this->actingAs($user)->postJson('/api/v1/maintenances', [
             'description' => 'Fix incidents',
-            'reason' => 'Multiple incidents require attention',
             'incident_ids' => [$incident1->id, $incident2->id],
             'realization' => 'internal',
             'operator_ids' => [$user->id],
@@ -284,7 +280,6 @@ describe('store', function (): void {
 
         $response = $this->actingAs($user)->postJson('/api/v1/maintenances', [
             'description' => 'Internal maintenance',
-            'reason' => 'Internal work required',
             'realization' => 'internal',
             'operator_ids' => [$user->id, $operator->id],
         ]);
@@ -299,7 +294,6 @@ describe('store', function (): void {
 
         $response = $this->actingAs($user)->postJson('/api/v1/maintenances', [
             'description' => 'External maintenance',
-            'reason' => 'Specialized work required',
             'realization' => 'external',
             'company_ids' => [$company->id],
         ]);
@@ -314,7 +308,6 @@ describe('store', function (): void {
 
         $response = $this->actingAs($user)->postJson('/api/v1/maintenances', [
             'description' => 'Mixed maintenance',
-            'reason' => 'Both internal and external work needed',
             'realization' => 'both',
             'operator_ids' => [$user->id],
             'company_ids' => [$company->id],
@@ -338,7 +331,6 @@ describe('store', function (): void {
 
         $response = $this->actingAs($user)->postJson('/api/v1/maintenances', [
             'description' => 'Maintenance with spare parts',
-            'reason' => 'Parts replacement needed',
             'realization' => 'internal',
             'operator_ids' => [$user->id],
             'item_movements' => [
@@ -365,7 +357,6 @@ describe('store', function (): void {
 
         $response = $this->actingAs($user)->postJson('/api/v1/maintenances', [
             'description' => 'Test maintenance',
-            'reason' => 'Test reason',
             'realization' => 'internal',
             // No operator_ids
         ]);
@@ -379,7 +370,6 @@ describe('store', function (): void {
 
         $response = $this->actingAs($user)->postJson('/api/v1/maintenances', [
             'description' => 'Test maintenance',
-            'reason' => 'Test reason',
             'realization' => 'external',
             // No company_ids
         ]);
@@ -398,7 +388,6 @@ describe('store', function (): void {
 
         $response = $this->actingAs($user)->postJson('/api/v1/maintenances', [
             'description' => 'Maintenance with spare parts',
-            'reason' => 'Parts needed',
             'realization' => 'internal',
             'operator_ids' => [$user->id],
             'item_movements' => [
@@ -415,7 +404,6 @@ describe('store', function (): void {
 
         $response = $this->actingAs($user)->postJson('/api/v1/maintenances', [
             'description' => 'Test',
-            'reason' => 'Test reason',
         ]);
 
         $response->assertForbidden();

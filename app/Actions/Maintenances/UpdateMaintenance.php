@@ -30,7 +30,6 @@ class UpdateMaintenance
             $maintenance->update([
                 'edited_by_id' => $user->id,
                 'description' => $data['description'] ?? $maintenance->description,
-                'reason' => $data['reason'] ?? $maintenance->reason,
                 'type' => $data['type'] ?? $maintenance->type,
                 'realization' => $data['realization'] ?? $maintenance->realization,
                 'status' => $data['status'] ?? $maintenance->status,

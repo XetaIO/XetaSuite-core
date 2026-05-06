@@ -65,7 +65,7 @@ return [
         'maintenances' => [
             'model' => Maintenance::class,
             'permission' => 'maintenance.view',
-            'columns' => ['description', 'reason'],
+            'columns' => ['description'],
             'relations' => ['site', 'material'],
             'hq_only' => false,
         ],

@@ -36,7 +36,7 @@ class CreateMaintenanceTool extends AbstractAssistantTool
             'required' => ['material_id', 'description', 'type'],
             'properties' => [
                 'material_id' => ['type' => 'integer', 'description' => 'ID du matériel'],
-                'description' => ['type' => 'string', 'description' => 'Description de la maintenance'],
+                'description' => ['type' => 'string', 'description' => 'Description de la maintenance (ex: remplacement de joint, fuite détectée). Optionnel : utilise ce que l\'utilisateur mentionne, ou "Maintenance planifiée" par défaut.'],
                 'type' => ['type' => 'string', 'enum' => ['preventive', 'corrective'], 'description' => 'Type de maintenance'],
                 'started_at' => ['type' => 'string', 'description' => 'Date de début ISO 8601'],
             ],
@@ -45,6 +45,8 @@ class CreateMaintenanceTool extends AbstractAssistantTool
 
     public function execute(User $user, array $args): array
     {
+        $args['description'] = $args['description'] ?? 'Maintenance planifiée';
+
         $maintenance = $this->action->handle($user, $args);
 
         return [

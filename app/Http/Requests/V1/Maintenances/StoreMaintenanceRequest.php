@@ -40,7 +40,6 @@ class StoreMaintenanceRequest extends FormRequest
                 $this->existsOnCurrentSite('materials'),
             ],
             'description' => ['required', 'string', 'max:5000'],
-            'reason' => ['required', 'string', 'max:5000'],
             'type' => [Rule::enum(MaintenanceType::class)],
             'realization' => [Rule::enum(MaintenanceRealization::class)],
             'status' => [Rule::enum(MaintenanceStatus::class)],
@@ -166,7 +165,6 @@ class StoreMaintenanceRequest extends FormRequest
         return [
             'material_id' => __('maintenances.material'),
             'description' => __('maintenances.description'),
-            'reason' => __('maintenances.reason'),
             'type' => __('maintenances.type'),
             'realization' => __('maintenances.realization'),
             'status' => __('maintenances.status'),

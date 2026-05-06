@@ -499,7 +499,6 @@ describe('maintenances', function (): void {
         $this->service->execute($this->user, 'create_maintenance', [
             'description' => 'Annual inspection',
             'material_id' => $this->material->id,
-            'reason' => 'Scheduled inspection',
         ]);
 
         $this->assertDatabaseHas('maintenances', [

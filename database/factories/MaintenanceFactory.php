@@ -36,7 +36,6 @@ class MaintenanceFactory extends Factory
             'edited_by_id' => null,
 
             'description' => fake()->paragraph(),
-            'reason' => fake()->sentence(),
 
             'type' => fake()->randomElement(MaintenanceType::cases())->value,
             'realization' => fake()->randomElement(MaintenanceRealization::cases())->value,

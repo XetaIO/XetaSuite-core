@@ -967,7 +967,7 @@ describe('maintenances', function (): void {
             ->assertJsonCount(3, 'data')
             ->assertJsonStructure([
                 'data' => [
-                    '*' => ['id', 'description', 'reason', 'type', 'status', 'material_id', 'created_at'],
+                    '*' => ['id', 'description', 'type', 'status', 'material_id', 'created_at'],
                 ],
                 'links',
                 'meta',
@@ -978,15 +978,15 @@ describe('maintenances', function (): void {
         $user = createUserOnRegularSite($this->regularSite, $this->role);
 
         $material = Material::factory()->forZone($this->zoneWithMaterials)->create();
-        Maintenance::factory()->forSite($this->regularSite)->forMaterial($material)->create(['reason' => 'Annual checkup']);
-        Maintenance::factory()->forSite($this->regularSite)->forMaterial($material)->create(['reason' => 'Emergency repair']);
+        Maintenance::factory()->forSite($this->regularSite)->forMaterial($material)->create(['description' => 'Annual checkup']);
+        Maintenance::factory()->forSite($this->regularSite)->forMaterial($material)->create(['description' => 'Emergency repair']);
 
         $response = $this->actingAs($user)
             ->getJson("/api/v1/materials/{$material->id}/maintenances?search=checkup");
 
         $response->assertOk()
             ->assertJsonCount(1, 'data');
-        expect($response->json('data.0.reason'))->toBe('Annual checkup');
+        expect($response->json('data.0.description'))->toBe('Annual checkup');
     });
 
     it('cannot view maintenances for material from another site', function (): void {

@@ -42,7 +42,6 @@ class CreateMaintenance
                 'created_by_id' => $user->id,
                 'created_by_name' => $user->full_name,
                 'description' => $data['description'],
-                'reason' => $data['reason'] ?? null,
                 'type' => $data['type'] ?? MaintenanceType::CORRECTIVE,
                 'realization' => $data['realization'] ?? MaintenanceRealization::INTERNAL,
                 'status' => $data['status'] ?? MaintenanceStatus::PLANNED,

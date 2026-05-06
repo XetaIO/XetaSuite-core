@@ -34,7 +34,6 @@ class UpdateMaintenanceRequest extends FormRequest
         return [
             // Note: material_id cannot be changed after creation
             'description' => ['sometimes', 'string', 'max:5000'],
-            'reason' => ['nullable', 'string', 'max:5000'],
             'type' => ['sometimes', Rule::enum(MaintenanceType::class)],
             'realization' => ['sometimes', Rule::enum(MaintenanceRealization::class)],
             'status' => ['sometimes', Rule::enum(MaintenanceStatus::class)],
@@ -121,7 +120,6 @@ class UpdateMaintenanceRequest extends FormRequest
     {
         return [
             'description' => __('maintenances.description'),
-            'reason' => __('maintenances.reason'),
             'type' => __('maintenances.type'),
             'realization' => __('maintenances.realization'),
             'status' => __('maintenances.status'),

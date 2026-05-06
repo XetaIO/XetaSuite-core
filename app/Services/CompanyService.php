@@ -20,7 +20,7 @@ class CompanyService
 
     private const ALLOWED_SORTS = ['name', 'maintenances_count', 'items_count', 'created_at'];
 
-    private const MAINTENANCE_SEARCH_COLUMNS = ['description', 'reason'];
+    private const MAINTENANCE_SEARCH_COLUMNS = ['description'];
 
     private const MAINTENANCE_ALLOWED_SORTS = ['type', 'status', 'started_at', 'resolved_at', 'created_at'];
 

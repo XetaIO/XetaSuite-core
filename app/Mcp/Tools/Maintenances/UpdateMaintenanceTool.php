@@ -31,7 +31,6 @@ class UpdateMaintenanceTool extends Tool
 
         $request->validate([
             'description' => 'nullable|string',
-            'reason' => 'nullable|string',
             'type' => 'nullable|string|in:corrective,preventive',
             'realization' => 'nullable|string|in:internal,external,both',
             'status' => 'nullable|string|in:planned,in_progress,resolved',
@@ -46,7 +45,7 @@ class UpdateMaintenanceTool extends Tool
         ]);
 
         $data = [];
-        $fields = ['description', 'reason', 'type', 'realization', 'status', 'started_at', 'resolved_at', 'operator_ids', 'company_ids', 'incident_ids'];
+        $fields = ['description', 'type', 'realization', 'status', 'started_at', 'resolved_at', 'operator_ids', 'company_ids', 'incident_ids'];
 
         foreach ($fields as $field) {
             if ($request->get($field) !== null) {
@@ -65,7 +64,6 @@ class UpdateMaintenanceTool extends Tool
             'site_id' => $schema->integer()->description('Site ID (optional)'),
             'maintenance_id' => $schema->integer()->description('ID of the maintenance to update')->required(),
             'description' => $schema->string()->description('New description'),
-            'reason' => $schema->string()->description('New reason'),
             'type' => $schema->string()->description('New type: corrective or preventive'),
             'realization' => $schema->string()->description('New realization: internal, external, or both'),
             'status' => $schema->string()->description('New status: planned, in_progress, or resolved'),

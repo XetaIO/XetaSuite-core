@@ -22,7 +22,6 @@ class MaintenanceResource extends JsonResource
         return [
             'id' => $this->id,
             'description' => $this->description,
-            'reason' => $this->reason,
 
             // Enums
             'type' => $this->type->value,
